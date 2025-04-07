@@ -1,17 +1,17 @@
-// === 變數宣告區：用來儲存各種物件和設定 ===
-let bambooStalks = [], leaves = [], flowers = []; // 存放竹子、葉子、花朵的資料陣列
-let buttons = [], iframe; // 頁面上的按鈕和嵌入式 iframe
-let sprite1, sprite2, sprite3, sprite4; // 四隻角色的動畫圖像
-let sprite1Frames = [], sprite2Frames = [], sprite3Frames = [], sprite4Frames = []; // 動畫影格陣列
-let sprite1Index = 0, sprite2Index = 0, sprite3Index = 0, sprite4Index = 0; // 每個角色目前顯示的影格索引
-let sprite1Timer = 0, sprite2Timer = 0, sprite3Timer = 0, sprite4Timer = 0; // 每個動畫用的計時器
-let isHovering = [false, false, false, false]; // 記錄滑鼠是否懸停在按鈕上
-let isInPortfolioMode = false; // 是否進入作品集模式
-let clouds = []; // 雲朵資料
-let bambooSound; // 竹子被點擊播放的音效
-let isNight = false; // 是否為黑夜模式（按下 N 鍵切換）
+// ====== 全域變數宣告區 ======
+let bambooStalks = [], leaves = [], flowers = []; // 存放竹子、葉子、花的資料
+let buttons = [], iframe; // 按鈕陣列，iframe 是嵌入的影片視窗
+let sprite1, sprite2, sprite3, sprite4; // 四組動畫素材圖片
+let sprite1Frames = [], sprite2Frames = [], sprite3Frames = [], sprite4Frames = []; // 分割後的動畫影格
+let sprite1Index = 0, sprite2Index = 0, sprite3Index = 0, sprite4Index = 0; // 各角色目前動畫播放的影格索引
+let sprite1Timer = 0, sprite2Timer = 0, sprite3Timer = 0, sprite4Timer = 0; // 各動畫的播放時間控制
+let isHovering = [false, false, false, false]; // 記錄滑鼠是否在四個按鈕上
+let isInPortfolioMode = false; // 是否開啟作品集模式
+let clouds = []; // 存放雲朵資料
+let bambooSound; // 竹子被觸碰時播放的音效
+let isNight = false; // 是否為夜間模式（按下 N 切換）
 
-// === 預載入圖像和音效資源 ===
+// ====== 預先載入素材 ======
 function preload() {
   sprite1 = loadImage('1_all.png');
   sprite2 = loadImage('2_all.png');
@@ -21,28 +21,28 @@ function preload() {
   bambooSound = loadSound('130532__stomachache__d1.wav');
 }
 
-// === 畫布與物件初始化 ===
+// ====== 初始化程式畫面內容 ======
 function setup() {
-  createCanvas(windowWidth, windowHeight); // 設定畫布為整個視窗大小
-  setupBamboo();     // 建立竹子資料
-  setupLeaves();     // 建立落葉資料
-  setupFlowers();    // 建立花朵資料
-  setupButtons();    // 建立按鈕
-  setupSprites();    // 切割角色動畫影格
-  setupClouds();     // 建立雲朵
+  createCanvas(windowWidth, windowHeight);
+  setupBamboo();   // 初始化竹子
+  setupLeaves();   // 初始化葉子
+  setupFlowers();  // 初始化花朵
+  setupButtons();  // 建立按鈕
+  setupSprites();  // 分割動畫圖片
+  setupClouds();   // 建立雲朵
 }
 
-// === 每幀畫面更新函式 ===
+// ====== 畫面更新函式，每秒60次 ======
 function draw() {
-  drawAtmosphere();  // 繪製背景與雲朵
-  drawBamboo();      // 繪製竹子（含 hover 效果）
-  drawLeaves();      // 繪製飄落的葉子
-  drawFlowers();     // 繪製地上的花朵
-  drawSprites();     // 繪製角色動畫（滑鼠移到按鈕時）
-  if (isInPortfolioMode) drawPortfolioLinks(); // 顯示作品集連結
+  drawAtmosphere();   // 畫背景和雲
+  drawBamboo();       // 畫竹子
+  drawLeaves();       // 畫掉落的葉子
+  drawFlowers();      // 畫花朵
+  drawSprites();      // 畫動畫角色
+  if (isInPortfolioMode) drawPortfolioLinks(); // 如果是作品集模式，就顯示連結
 }
 
-// === 分割每張角色圖為多張動畫影格 ===
+// ====== 將精靈動畫圖分割成每一格影像 ======
 function setupSprites() {
   for (let i = 0; i < 10; i++) sprite1Frames.push(sprite1.get(i * 56, 0, 56, 54));
   for (let i = 0; i < 7; i++) sprite2Frames.push(sprite2.get(i * 44.285, 0, 44.285, 46));
@@ -50,7 +50,7 @@ function setupSprites() {
   for (let i = 0; i < 8; i++) sprite4Frames.push(sprite4.get(i * 47.375, 0, 47.375, 34));
 }
 
-// === 根據滑鼠移動動畫角色 ===
+// ====== 畫出角色動畫 ======
 function drawSprites() {
   const posX = mouseX + 10, posY = mouseY + 10;
   if (isHovering[0]) {
@@ -83,7 +83,7 @@ function drawSprites() {
   }
 }
 
-// === 初始化竹子的位置與高度 ===
+// ====== 初始化竹子位置和屬性 ======
 function setupBamboo() {
   for (let i = 0; i < width; i += 80) {
     bambooStalks.push({
@@ -94,35 +94,38 @@ function setupBamboo() {
   }
 }
 
-// === 繪製竹子並加上 hover 效果與音效 ===
+// ====== 畫出竹子並檢查滑鼠是否在上面 ======
 function drawBamboo() {
   for (let b of bambooStalks) {
     const isMouseOver = mouseX >= b.x && mouseX <= b.x + 15 && mouseY >= height - b.height && mouseY <= height;
-    if (isMouseOver && !b.hover) {
-      b.hover = true;
-      if (!bambooSound.isPlaying()) bambooSound.play();
-    } else if (!isMouseOver && b.hover) {
+
+    if (isMouseOver) {
+      if (!b.hover) {
+        b.hover = true;
+        bambooSound.play(); // 播放竹子聲音（每次進入時觸發）
+      }
+    } else {
       b.hover = false;
     }
 
     if (b.hover) {
-      stroke('#f2e8cf'); // 畫出外框高亮
+      stroke('#f2e8cf'); // 高亮邊框
       strokeWeight(3);
     } else {
       noStroke();
     }
 
-    fill('#6a994e'); // 主體顏色
-    rect(b.x, height - b.height, 15, b.height, 5); // 主體
+    fill('#6a994e');
+    rect(b.x, height - b.height, 15, b.height, 5);
 
-    stroke('#386641'); // 畫竹節
+    stroke('#386641');
     for (let y = height - b.height + 20; y < height; y += 25) {
       line(b.x, y, b.x + 15, y);
     }
   }
 }
 
-// === 初始化落葉資料 ===
+// ====== 建立漂浮落下的葉子 ======
 function setupLeaves() {
   for (let i = 0; i < 50; i++) {
     leaves.push({
@@ -135,7 +138,7 @@ function setupLeaves() {
   }
 }
 
-// === 繪製飄落的葉子 ===
+// ====== 畫葉子並製造掉落飄動感 ======
 function drawLeaves() {
   fill('#a7c957');
   noStroke();
@@ -155,7 +158,7 @@ function drawLeaves() {
   }
 }
 
-// === 初始化地上花朵 ===
+// ====== 建立地上的花朵 ======
 function setupFlowers() {
   for (let i = 0; i < 30; i++) {
     flowers.push({
@@ -167,7 +170,7 @@ function setupFlowers() {
   }
 }
 
-// === 繪製花朵 ===
+// ====== 畫地上的花 ======
 function drawFlowers() {
   for (let f of flowers) {
     fill(f.c);
@@ -176,7 +179,7 @@ function drawFlowers() {
   }
 }
 
-// === 建立頁面上的四個按鈕 ===
+// ====== 建立選單按鈕及點擊事件 ======
 function setupButtons() {
   const labels = ['自我介紹', '作品集', '測驗題', '教學影片'];
   const links = [
@@ -200,35 +203,29 @@ function setupButtons() {
     btn.mouseOver(() => isHovering[i] = true);
     btn.mouseOut(() => isHovering[i] = false);
     btn.mousePressed(() => {
-      if (iframe) {
-        iframe.remove();
-        iframe = null;
-      }
+      if (iframe) iframe.remove();
       if (i === 1) {
-        setPortfolioMode(true); // 開啟作品集模式
+        setPortfolioMode(true);
       } else {
         setPortfolioMode(false);
-        createIframe(links[i]); // 顯示影片或網站
+        createIframe(links[i]);
       }
     });
     buttons.push(btn);
   }
 }
 
-// === 控制作品集模式（顯示連結或關閉） ===
+// ====== 控制是否顯示作品集模式 ======
 function setPortfolioMode(isEnabled) {
   isInPortfolioMode = isEnabled;
-  if (iframe) {
-    iframe.remove();
-    iframe = null;
-  }
+  if (iframe) iframe.remove();
   if (!isEnabled && window.portfolioAnchors) {
     for (let a of window.portfolioAnchors) a.remove();
     window.portfolioAnchors = null;
   }
 }
 
-// === 畫出 HackMD 作品連結按鈕 ===
+// ====== 畫出作品集的超連結 ======
 function drawPortfolioLinks() {
   fill(isNight ? '#ffeb3b' : '#386641');
   textSize(24);
@@ -264,7 +261,7 @@ function drawPortfolioLinks() {
   }
 }
 
-// === 建立影片 iframe 元素 ===
+// ====== 建立嵌入式影片框架（iframe） ======
 function createIframe(url) {
   if (iframe) iframe.remove();
   iframe = createElement('iframe');
@@ -276,7 +273,7 @@ function createIframe(url) {
   iframe.style('box-shadow', '0 4px 20px rgba(0,0,0,0.2)');
 }
 
-// === 初始化雲朵 ===
+// ====== 建立雲朵初始位置與大小 ======
 function setupClouds() {
   for (let i = 0; i < 5; i++) {
     clouds.push({
@@ -288,7 +285,7 @@ function setupClouds() {
   }
 }
 
-// === 繪製天空背景與雲朵、太陽或月亮 ===
+// ====== 畫出背景、天空、太陽／月亮、雲 ======
 function drawAtmosphere() {
   let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
   if (isNight) {
@@ -301,7 +298,6 @@ function drawAtmosphere() {
   drawingContext.fillStyle = gradient;
   rect(0, 0, width, height);
 
-  // 太陽或月亮
   if (isNight) {
     noStroke();
     for (let r = 200; r > 50; r -= 10) {
@@ -315,27 +311,26 @@ function drawAtmosphere() {
     ellipse(width / 2, height / 2, 600, 600);
   }
 
-  // 雲朵
   fill(255, 255, 255, isNight ? 10 : 15);
   for (let cloud of clouds) {
     ellipse(cloud.x, cloud.y, cloud.w, cloud.h);
   }
 }
 
-// === 畫面大小改變時自動重新調整 ===
+// ====== 畫面尺寸改變時重新調整畫布大小 ======
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   if (iframe) iframe.position((windowWidth - 800) / 2, (windowHeight - 450) / 2);
 }
 
-// === 按下 N 鍵切換白天／夜晚模式 ===
+// ====== 鍵盤按下 N 鍵時切換夜晚模式 ======
 function keyPressed() {
   if (key === 'n' || key === 'N') {
     isNight = !isNight;
   }
 }
 
-// === 滑鼠點擊竹子時播放音效 ===
+// ====== 滑鼠點下竹子時再播一次聲音（補強 hover 觸發不到的情況） ======
 function mousePressed() {
   for (let b of bambooStalks) {
     if (
@@ -344,7 +339,7 @@ function mousePressed() {
       mouseY >= height - b.height &&
       mouseY <= height
     ) {
-      if (!bambooSound.isPlaying()) bambooSound.play();
+      bambooSound.play();
       break;
     }
   }
