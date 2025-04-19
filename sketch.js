@@ -183,7 +183,7 @@ function drawFlowers() {
 function setupButtons() {
   const labels = ['自我介紹', '作品集', '測驗題', '教學影片'];
   const links = [
-    'https://www.et.tku.edu.tw/',
+    'https://wither0858.github.io/20250419/',
     '',
     'https://wither0858.github.io/20250310/',
     'https://cfchen58.synology.me/程式設計2024/B2/week8/20250407_112555.mp4'
